@@ -82,11 +82,17 @@ const CardSlot = {
   computed: {
     imageURL() {
       return `images/cards.svg#${this.state.card.id}`;
+    },
+    chipImageURL() {
+      return `images/chip-${this.state.owner}.png`;
     }
   },
   template: `
-    <img v-if="this.state.card.rank == 0" src="images/free-card.png"/>
-    <svg v-else role="img"><use :xlink:href="imageURL"/></svg>`
+    <div>
+      <img v-if="this.state.card.rank == 0" src="images/free-card.png"/>
+      <svg v-else role="img"><use :xlink:href="imageURL"/></svg>
+      <img v-if="this.state.owner" class="chip" :src="chipImageURL"/>
+    </div>`
 };
 
 const CardHand = {
@@ -97,7 +103,7 @@ const CardHand = {
     cardStates: Array
   },
   template: `
-    <div class="card-hand">
+    <div>
       <card-slot v-for="cardState in cardStates" :state="cardState"></card-slot>
     </div>`
 };
@@ -110,7 +116,7 @@ const GameBoard = {
     cardStateRows: Array
   },
   template: `
-    <div id="game-board">
+    <div>
       <div v-for="cardStateRow in cardStateRows">
         <card-slot v-for="cardState in cardStateRow" :state="cardState"></card-slot>
       </div>
