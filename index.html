@@ -27,10 +27,10 @@
 
   <div id="app">
     <div id="desk">
-      <game-board :card-state-rows="boardCardStateRows"></game-board>
+      <game-board id="game-board" :card-state-rows="boardCardStateRows"></game-board>
     </div>
     <div id="player">
-      <card-hand :card-states="handCardStates"></card-hand>
+      <card-hand id="player-cards" :card-states="handCardStates"></card-hand>
     </div>
   </div>
 
