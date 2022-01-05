@@ -55,6 +55,11 @@ html, body, #app {
   position: relative;
 }
 
+#game-board > div > div.focused {
+  box-shadow: 0 0 10px 10px #0ff;
+  z-index: 3;
+}
+
 #game-board > div > div > .chip {
   position: absolute;
   top: 0;
@@ -67,6 +72,12 @@ html, body, #app {
   height: 14vh;
   margin: 0.5vh -4vh 0 0;
   transform: rotate(2deg);
+}
+
+#player-cards > div.focused {
+  margin-top: -1vh;
+  width: 11vh;
+  height: 15vh;
 }
 
 #game-board > div > div > *, #player-cards > div > * {

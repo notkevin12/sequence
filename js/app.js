@@ -77,18 +77,30 @@ let boardSetting = defaultBoardSetting; // set to null for randomized board
 
 const CardSlot = {
   props: {
-    state: Object
+    state: Object,
+    focusedCard: Object
   },
+  emits: [
+    "cardClick"
+  ],
   computed: {
     imageURL() {
       return `images/cards.svg#${this.state.card.id}`;
     },
     chipImageURL() {
       return `images/chip-${this.state.owner}.png`;
+    },
+    classObject() {
+      return { focused: this.focusedCard && this.state.card.id == this.focusedCard.id };
+    }
+  },
+  methods: {
+    click() {
+      this.$emit("cardClick", this.state);
     }
   },
   template: `
-    <div>
+    <div :class="classObject" @click="click">
       <img v-if="this.state.card.rank == 0" src="images/free-card.png"/>
       <svg v-else role="img"><use :xlink:href="imageURL"/></svg>
       <img v-if="this.state.owner" class="chip" :src="chipImageURL"/>
@@ -97,28 +109,48 @@ const CardSlot = {
 
 const CardHand = {
   components: {
-    "card-slot": CardSlot
+    CardSlot
   },
   props: {
-    cardStates: Array
+    cardStates: Array,
+    gameState: Object
+  },
+  emits: [
+    "cardClick"
+  ],
+  methods: {
+    cardClick(state) {
+      this.$emit("cardClick", state);
+    }
   },
   template: `
     <div>
-      <card-slot v-for="cardState in cardStates" :state="cardState"></card-slot>
+      <card-slot v-for="cardState in cardStates" @card-click="cardClick"
+        :state="cardState" :focused-card="gameState.focusedCard"></card-slot>
     </div>`
 };
 
 const GameBoard = {
   components: {
-    "card-slot": CardSlot
+    CardSlot
   },
   props: {
-    cardStateRows: Array
+    cardStateRows: Array,
+    gameState: Object
+  },
+  emits: [
+    "cardClick"
+  ],
+  methods: {
+    cardClick(state) {
+      this.$emit("cardClick", state);
+    }
   },
   template: `
     <div>
       <div v-for="cardStateRow in cardStateRows">
-        <card-slot v-for="cardState in cardStateRow" :state="cardState"></card-slot>
+        <card-slot v-for="cardState in cardStateRow" @card-click="cardClick"
+          :state="cardState" :focused-card="gameState.focusedCard"></card-slot>
       </div>
     </div>`
 };
@@ -129,14 +161,26 @@ const GameBoard = {
 
 const app = Vue.createApp({
   components: {
-    "game-board": GameBoard,
-    "card-hand": CardHand
+    GameBoard,
+    CardHand
   },
   data() {
     return {
       boardCardStateRows: [],
-      handCardStates: []
+      handCardStates: [],
+      gameState: {
+        focusedCard: null,
+        currentPlayer: "green"
+      }
     };
+  },
+  methods: {
+    handCardClick(state) {
+      this.gameState.focusedCard = state.card;
+    },
+    boardCardClick(state) {
+      state.owner = this.gameState.currentPlayer;
+    }
   },
   created() {
     this.cardPool = new CardPool(2, false, true);
